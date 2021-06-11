@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class SoundManagerScript : MonoBehaviour
 {
-    public static AudioClip music, chickenDeathSound, foxDeathSound;
+    public static AudioClip music, chickenDeathSound, foxDeathSound, goldSound;
     static AudioSource audioSrc;
     // Start is called before the first frame update
     void Start()
     {
         chickenDeathSound = Resources.Load<AudioClip>("ChickenDeath");
         foxDeathSound = Resources.Load<AudioClip>("FoxDeath");
+        goldSound = Resources.Load<AudioClip>("GoldSound");
         audioSrc = GetComponent<AudioSource>();
     }
 
@@ -30,6 +31,9 @@ public class SoundManagerScript : MonoBehaviour
                 break;
             case "FoxDeath":
                 audioSrc.PlayOneShot(foxDeathSound);
+                break;
+            case "GoldSound":
+                audioSrc.PlayOneShot(goldSound);
                 break;
         }
         

@@ -5,20 +5,15 @@ using UnityEngine.UI;
 
 public class LifeCount : MonoBehaviour
 {
-    public GameObject lives;
-    public static int lifeCount;
-    Text lifeCounter;
+    public Text lifeCounter;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        lifeCount = 3;
-        lifeCounter = GetComponent<Text>();
+
+        
     }
-
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        lifeCounter.text = "Lives: " + lifeCount;
+        lifeCounter.text = "Lives: " + PlayerPrefs.GetInt("lives").ToString();
     }
 }

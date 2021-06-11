@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HighScore : MonoBehaviour
+public class KillCount : MonoBehaviour
 {
-    Text highScoreText;
+    public Text totalCounter;
 
     // Start is called before the first frame update
     void Start()
     {
-        highScoreText = GameObject.Find("HighScore").GetComponent<Text>();
-
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        highScoreText.text = "HIGH SCORE: " + ScoreScript.highScoreValue;
+        totalCounter.text = "Kill Count: " + PlayerPrefs.GetInt("totalkills").ToString();
+
     }
 }

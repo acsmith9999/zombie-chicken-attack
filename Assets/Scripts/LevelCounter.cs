@@ -18,6 +18,6 @@ public class LevelCounter : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        levelText.text = "Level: " + controller.levelNumber;
+        levelText.text = "Wave: " + controller.waveNumber;
     }
 }

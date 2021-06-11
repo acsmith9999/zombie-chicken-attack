@@ -5,26 +5,36 @@ using UnityEngine.SceneManagement;
 
 public class StartPlay : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public GameObject resumeButton;
+    private void Start()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        if (PlayerPrefs.HasKey("hasgame"))
+        {
+            resumeButton.SetActive(true);
+        }
+        else { resumeButton.SetActive(false); }
     }
 
     public void StartButton()
     {
-        SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("Farm");
+        PlayerPrefs.DeleteKey("lives");
+        PlayerPrefs.SetInt("levelaccess", 1);
+        PlayerPrefs.DeleteKey("hasgame");
+        PlayerPrefs.DeleteKey("totalkills");
+        PlayerPrefs.DeleteKey("gold");
+        //delete all?
     }
 
     public void QuitButton()
     {
         Application.Quit();
+    }
+
+    public void ResumeButton()
+    {
+        SceneManager.LoadScene("Farm");
+
     }
 
 }

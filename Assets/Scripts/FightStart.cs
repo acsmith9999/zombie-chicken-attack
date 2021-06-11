@@ -1,22 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
-public class HighScore : MonoBehaviour
+public class FightStart : MonoBehaviour
 {
-    Text highScoreText;
-
     // Start is called before the first frame update
     void Start()
     {
-        highScoreText = GameObject.Find("HighScore").GetComponent<Text>();
-
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        highScoreText.text = "HIGH SCORE: " + ScoreScript.highScoreValue;
+        
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        SceneManager.LoadScene("Battle");
     }
 }

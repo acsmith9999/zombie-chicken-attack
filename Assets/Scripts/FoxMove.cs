@@ -7,13 +7,11 @@ public class FoxMove : MonoBehaviour
 {
     public float moveSpeed;
 
-    private Rigidbody2D myRigidBody;
+    private Rigidbody2D rb;
 
     private bool holdPosition;
     private Vector2 playerPos;
     private Vector2 fireDir;
-
-    private bool playerDead;
 
     public GameObject Fox;
     public GameObject bulletDown;
@@ -22,14 +20,17 @@ public class FoxMove : MonoBehaviour
     public GameObject bulletRight;
     public GameObject stain;
 
-    public Vector2 startPos = new Vector2(0f, 0f);
+    public Vector2 startPos;
 
     private Vector2 bulletPos;
     private float fireRate = 0.1f;
     private float nextFire = 0.2f;
 
-    private bool reloading;
     public float waitToReload;
+
+    private int lifeCount;
+
+    public int levelAccess;
 
     public Controller gameLevelManager;
     // Start is called before the first frame update
@@ -37,8 +38,12 @@ public class FoxMove : MonoBehaviour
     {
         gameLevelManager = FindObjectOfType<Controller>();
 
-        myRigidBody = GetComponent<Rigidbody2D>();
-
+        rb = GetComponent<Rigidbody2D>();
+        if (PlayerPrefs.HasKey("lives"))
+        {
+            lifeCount = PlayerPrefs.GetInt("lives");
+        }
+        else { PlayerPrefs.SetInt("lives", 3); }
 
     }
 
@@ -46,58 +51,43 @@ public class FoxMove : MonoBehaviour
     void Update()
     {
         playerPos = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-
-        if (playerPos.x < -0.5f)
-        {
-            transform.Translate(new Vector3(Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime, 0f, 0f));
-            
-            if (Time.time > nextFire)
-            {
-                nextFire = Time.time + fireRate;
-                fire();
-            }
-        }
-
-        if (playerPos.x > 0.5f)
-        {
-            transform.Translate(new Vector3(Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime, 0f, 0f));
-            if (Time.time > nextFire)
-            {
-                nextFire = Time.time + fireRate;
-                fire();
-            }
-        }
-
-        if (playerPos.y > 0.5f)
-        {
-            transform.Translate(new Vector3(0f, Input.GetAxisRaw("Vertical") * moveSpeed * Time.deltaTime, 0f));
-            if (Time.time > nextFire)
-            {
-                nextFire = Time.time + fireRate;
-                fire();
-            }
-        }
-
-        if (playerPos.y < -0.5f)
-        {
-            transform.Translate(new Vector3(0f, Input.GetAxisRaw("Vertical") * moveSpeed * Time.deltaTime, 0f));
-            if (Time.time > nextFire)
-            {
-                nextFire = Time.time + fireRate;
-                fire();
-            }
-        }
-
     }
+
+    private void FixedUpdate()
+    {
+        moveCharacter(playerPos);
+        if (Time.time > nextFire)
+        {
+            nextFire = Time.time + fireRate;
+            fire();
+        }
+    }
+
+    void moveCharacter(Vector2 direction)
+    {
+        rb.MovePosition((Vector2)transform.position + (direction * moveSpeed * Time.deltaTime));
+    }
+
 
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.tag == "Enemy")
         {
-            LifeCount.lifeCount -= 1;
+            lifeCount -= 1;
+            PlayerPrefs.SetInt("lives", lifeCount);
             gameLevelManager.Respawn();
             SoundManagerScript.PlaySound("FoxDeath");
             Instantiate(stain, this.transform.position, Quaternion.identity);
+        }
+        if (other.gameObject.tag == "Finish")
+        {
+            SceneManager.LoadScene("Farm");
+            if(levelAccess < gameLevelManager.levelNumber)
+            {
+                levelAccess = gameLevelManager.levelNumber +1;
+                PlayerPrefs.SetInt("levelaccess", levelAccess);
+            }
+
         }
     }
 
@@ -173,6 +163,5 @@ public class FoxMove : MonoBehaviour
         }
 
     }
-
 
 }
