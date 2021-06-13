@@ -14,6 +14,6 @@ public class LifeCount : MonoBehaviour
     }
     private void Update()
     {
-        lifeCounter.text = "Lives: " + PlayerPrefs.GetInt("lives").ToString();
+        lifeCounter.text = "Lives: " + PlayerPrefs.GetInt("currentlives").ToString();
     }
 }

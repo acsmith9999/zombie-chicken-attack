@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class StartPlay : MonoBehaviour
 {
-    public GameObject resumeButton;
+    public GameObject resumeButton, areYouSure, newButton;
     private void Start()
     {
         if (PlayerPrefs.HasKey("hasgame"))
@@ -17,15 +17,34 @@ public class StartPlay : MonoBehaviour
 
     public void StartButton()
     {
+        if (PlayerPrefs.GetInt("hasgame") != 1)
+        {
+            NewGame();
+        }
+        else
+        {
+            areYouSure.SetActive(true);
+            newButton.SetActive(false);
+        }
+        //delete all?
+    }
+
+    public void AreYouSure()
+    {
+        NewGame();
+    }
+
+    public void NewGame()
+    {
         SceneManager.LoadScene("Farm");
-        PlayerPrefs.DeleteKey("lives");
+        PlayerPrefs.DeleteKey("currentlives");
+        PlayerPrefs.SetInt("maxlives", 3);
         PlayerPrefs.SetInt("levelaccess", 1);
         PlayerPrefs.DeleteKey("hasgame");
         PlayerPrefs.DeleteKey("totalkills");
         PlayerPrefs.DeleteKey("gold");
-        //delete all?
+        PlayerPrefs.DeleteKey("bombcount");
     }
-
     public void QuitButton()
     {
         Application.Quit();

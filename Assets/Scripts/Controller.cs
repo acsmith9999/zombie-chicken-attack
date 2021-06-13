@@ -55,7 +55,7 @@ public class Controller : MonoBehaviour
         if (PlayerPrefs.GetInt("levelaccess") > levelNumber)
         {
             hasDoor = true;
-            Instantiate(WinDoor, enemyStartPos, Quaternion.identity);
+            Instantiate(WinDoor, new Vector2 (-10, -5), Quaternion.identity);
         }
     }
 
@@ -63,7 +63,7 @@ public class Controller : MonoBehaviour
     void Update()
     {
 
-        if (PlayerPrefs.GetInt("lives") < 1)
+        if (PlayerPrefs.GetInt("currentlives") < 1)
         {
             GameObject.FindGameObjectWithTag("Player").SetActive(false);
             gameOver.SetActive(true);
@@ -119,6 +119,7 @@ public class Controller : MonoBehaviour
 
         }
     }
+
     public void Respawn()
     {
         StartCoroutine(RespawnCoroutine());

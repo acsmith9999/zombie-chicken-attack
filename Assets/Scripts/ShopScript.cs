@@ -34,20 +34,61 @@ public class ShopScript : MonoBehaviour
 
     public void BuyLife()
     {
-        if (PlayerPrefs.GetInt("totalkills") < 50)
-        {
-            warningMessage.SetActive(true);
-            warningText.text = "Kill more chickens first!";
-        }
-        else if (PlayerPrefs.GetInt("lives") == 3)
+        if (PlayerPrefs.GetInt("currentlives") == PlayerPrefs.GetInt("maxlives"))
         {
             warningMessage.SetActive(true);
             warningText.text = "Already at maximum!";
         }
-        else if (PlayerPrefs.GetInt("lives") < 3 && PlayerPrefs.GetInt("totalkills") >= 50)
+
+        else if (PlayerPrefs.GetInt("gold") < 50)
         {
-            PlayerPrefs.SetInt("lives", PlayerPrefs.GetInt("lives") + 1);
-            PlayerPrefs.SetInt("totalkills", PlayerPrefs.GetInt("totalkills") - 50);
+            warningMessage.SetActive(true);
+            warningText.text = "Kill more chickens first!";
+        }
+
+        else if (PlayerPrefs.GetInt("currentlives") < PlayerPrefs.GetInt("maxlives") && PlayerPrefs.GetInt("gold") >= 50)
+        {
+            PlayerPrefs.SetInt("currentlives", PlayerPrefs.GetInt("currentlives") + 1);
+            PlayerPrefs.SetInt("gold", PlayerPrefs.GetInt("gold") - 50);
+        }
+    }
+
+    public void IncreaseMaxLife()
+    {
+        if (PlayerPrefs.GetInt("maxlives") == 10)
+        {
+            warningMessage.SetActive(true);
+            warningText.text = "Already at maximum!";
+        }
+        else if (PlayerPrefs.GetInt("gold") < 1000)
+        {
+            warningMessage.SetActive(true);
+            warningText.text = "Kill more chickens first!";
+        }
+        else if (PlayerPrefs.GetInt("maxlives") < 10 && PlayerPrefs.GetInt("gold") >= 1000)
+        {
+            PlayerPrefs.SetInt("maxlives", PlayerPrefs.GetInt("maxlives") + 1);
+            PlayerPrefs.SetInt("currentlives", PlayerPrefs.GetInt("currentlives") + 1);
+            PlayerPrefs.SetInt("gold", PlayerPrefs.GetInt("gold") - 1000);
+        }
+    }
+
+    public void BuyBomb()
+    {
+        if (PlayerPrefs.GetInt("bombcount") == 3)
+        {
+            warningMessage.SetActive(true);
+            warningText.text = "Already at maximum!";
+        }
+        else if (PlayerPrefs.GetInt("gold") < 200)
+        {
+            warningMessage.SetActive(true);
+            warningText.text = "Kill more chickens first!";
+        }
+        else if (PlayerPrefs.GetInt("bombcount") < 3 && PlayerPrefs.GetInt("gold") >= 200)
+        {
+            PlayerPrefs.SetInt("bombcount", PlayerPrefs.GetInt("bombcount") + 1);
+            PlayerPrefs.SetInt("gold", PlayerPrefs.GetInt("gold") - 200);
         }
     }
 

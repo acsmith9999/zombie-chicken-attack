@@ -10,12 +10,11 @@ public class Restart : MonoBehaviour
     {
         SceneManager.LoadScene("Farm");
         Time.timeScale = 1f;
-        if (PlayerPrefs.GetInt("lives") == 0)
+        if (PlayerPrefs.GetInt("currentlives") == 0)
         {
-            PlayerPrefs.SetInt("lives", 3);
+            PlayerPrefs.SetInt("currentlives", 3);
 
-            //penalty for game over?
-            //GameObject.FindObjectOfType<ScoreScript>().scoreValue = GameObject.FindObjectOfType<ScoreScript>().scoreValue/2;
+            PlayerPrefs.SetInt("gold", PlayerPrefs.GetInt("gold")/2);
         }
     }
 }

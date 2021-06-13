@@ -22,6 +22,8 @@ public class FoxMove : MonoBehaviour
 
     public Vector2 startPos;
 
+    public KeyCode bombKey;
+
     private Vector2 bulletPos;
     private float fireRate = 0.1f;
     private float nextFire = 0.2f;
@@ -39,11 +41,11 @@ public class FoxMove : MonoBehaviour
         gameLevelManager = FindObjectOfType<Controller>();
 
         rb = GetComponent<Rigidbody2D>();
-        if (PlayerPrefs.HasKey("lives"))
+        if (PlayerPrefs.HasKey("currentlives"))
         {
-            lifeCount = PlayerPrefs.GetInt("lives");
+            lifeCount = PlayerPrefs.GetInt("currentlives");
         }
-        else { PlayerPrefs.SetInt("lives", 3); }
+        else { PlayerPrefs.SetInt("currentlives", PlayerPrefs.GetInt("maxlives")); }
 
     }
 
@@ -68,13 +70,35 @@ public class FoxMove : MonoBehaviour
         rb.MovePosition((Vector2)transform.position + (direction * moveSpeed * Time.deltaTime));
     }
 
+    void UseBomb()
+    {
+        if (PlayerPrefs.GetInt("bombcount") > 0)
+        {
+            if (Input.GetKeyDown(bombKey))
+            {
+                    PlayerPrefs.SetInt("bombcount", PlayerPrefs.GetInt("bombcount") - 1);
+                    GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+                    foreach (GameObject enemy in enemies)
+                    {
+                    Destroy(enemy);
+                    }
+            }
+        }
+    }
+
+    //void RunningShoes()
+
+    //void Invincible()
+
+    //void RapidFire()
+    
 
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.tag == "Enemy")
         {
             lifeCount -= 1;
-            PlayerPrefs.SetInt("lives", lifeCount);
+            PlayerPrefs.SetInt("currentlives", lifeCount);
             gameLevelManager.Respawn();
             SoundManagerScript.PlaySound("FoxDeath");
             Instantiate(stain, this.transform.position, Quaternion.identity);
@@ -87,7 +111,11 @@ public class FoxMove : MonoBehaviour
                 levelAccess = gameLevelManager.levelNumber +1;
                 PlayerPrefs.SetInt("levelaccess", levelAccess);
             }
-
+        }
+        if (other.gameObject.tag == "Bomb" && PlayerPrefs.GetInt("bombcount") < 3)
+        {
+            PlayerPrefs.SetInt("bombcount", PlayerPrefs.GetInt("bombcount") + 1);
+            Destroy(other.gameObject);
         }
     }
 
