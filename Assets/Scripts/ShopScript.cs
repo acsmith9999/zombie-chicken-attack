@@ -6,9 +6,9 @@ using UnityEngine.UI;
 public class ShopScript : MonoBehaviour
 {
     public GameObject dialogueBox, shopMenu, warningMessage;
-    public Text dialogueText, warningText;
+    public Text dialogueText, warningText, lifePrice;
     public string dialogue;
-
+    public int price;
 
     public bool playerInRange;
     // Start is called before the first frame update
@@ -28,6 +28,8 @@ public class ShopScript : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 shopMenu.SetActive(true);
+                price = PlayerPrefs.GetInt("maxlives") * 1000 - 2000;
+                lifePrice.text = "INCREASE MAX LIFE = " + price + " GOLD";
             }
         }
     }
@@ -60,16 +62,17 @@ public class ShopScript : MonoBehaviour
             warningMessage.SetActive(true);
             warningText.text = "Already at maximum!";
         }
-        else if (PlayerPrefs.GetInt("gold") < 1000)
+        else if (PlayerPrefs.GetInt("gold") < price)
         {
             warningMessage.SetActive(true);
             warningText.text = "Kill more chickens first!";
         }
-        else if (PlayerPrefs.GetInt("maxlives") < 10 && PlayerPrefs.GetInt("gold") >= 1000)
+        else if (PlayerPrefs.GetInt("maxlives") < 10 && PlayerPrefs.GetInt("gold") >= price)
         {
             PlayerPrefs.SetInt("maxlives", PlayerPrefs.GetInt("maxlives") + 1);
             PlayerPrefs.SetInt("currentlives", PlayerPrefs.GetInt("currentlives") + 1);
-            PlayerPrefs.SetInt("gold", PlayerPrefs.GetInt("gold") - 1000);
+            PlayerPrefs.SetInt("gold", PlayerPrefs.GetInt("gold") - price);
+            lifePrice.text = "INCREASE MAX LIFE = " + price + " GOLD";
         }
     }
 

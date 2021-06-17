@@ -9,19 +9,21 @@ public class Controller : MonoBehaviour
     public FoxMove foxMove;
     public GameObject WinDoor;
     private GameObject[] enemies;
-    public GameObject[] listOfPrefabEnemies;
+
+    public GameObject[] listOfPrefabEnemies, powerUps, obstacles;
     public float numberOfEnemies;
-    private Vector2 enemyStartPos;
+    private Vector2 enemyStartPos, foxStartPos;
     public float waveNumber;
     public KeyCode _Key;
-    public int levelNumber;
+    public int levelNumber, minObstacles, maxObstacles, maxEnemies;
 
-    public int winCondition;
-    public int levelKillCount;
-    public int totalKillCount;
+    public int winCondition, levelKillCount, totalKillCount;
 
     private int hasGame;
-    private bool hasDoor;
+    private bool hasDoor, startButtonActive;
+
+    private float secondsBetweenSpawns;
+    private float elapsedTime = 0.0f;
 
     public GameObject gameOver, gameWin, buttonRestart, buttonNext, buttonStart;
 
@@ -29,6 +31,7 @@ public class Controller : MonoBehaviour
     void Start()
     {
         buttonStart.SetActive(true);
+        startButtonActive = true;
         Time.timeScale = 0f;
 
         hasGame = 1;
@@ -48,6 +51,20 @@ public class Controller : MonoBehaviour
             enemies = GameObject.FindGameObjectsWithTag("Enemy");
         }
 
+        for (int i = 1; i < Random.Range(minObstacles, maxObstacles); i++)
+        {
+            float spawnY = Random.Range
+                (Camera.main.ScreenToWorldPoint(new Vector2(0, 0)).y, Camera.main.ScreenToWorldPoint(new Vector2(0, Screen.height)).y);
+            float spawnX = Random.Range
+                (Camera.main.ScreenToWorldPoint(new Vector2(0, 0)).x, Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, 0)).x);
+
+            Vector2 spawnPosition = new Vector2(spawnX, spawnY);
+            if ((spawnPosition - foxMove.startPos).sqrMagnitude > 10)
+            {
+                Instantiate(obstacles[Random.Range(0, obstacles.Length)], spawnPosition, Quaternion.identity);
+            }
+        }
+
         Spawn();
         gameOver.SetActive(false);
         gameWin.SetActive(false);
@@ -57,6 +74,8 @@ public class Controller : MonoBehaviour
             hasDoor = true;
             Instantiate(WinDoor, new Vector2 (-10, -5), Quaternion.identity);
         }
+
+        secondsBetweenSpawns = Random.Range(10, 15);
     }
 
     // Update is called once per frame
@@ -80,11 +99,21 @@ public class Controller : MonoBehaviour
                 NextLevelButton();
             }
         }
+        if (startButtonActive == true)
+        {
+            if (Input.GetKeyDown(_Key))
+            {
+                StartButton();
+            }
+        }
+
+        elapsedTime += Time.deltaTime;
     }
 
     public void StartButton()
     {
         buttonStart.SetActive(false);
+        startButtonActive = false;
         Time.timeScale = 1f;
     }
 
@@ -104,19 +133,41 @@ public class Controller : MonoBehaviour
             Instantiate(WinDoor, enemyStartPos, Quaternion.identity);
             hasDoor = true;
         }
+
+
+        //spawn random items
+
+        if (elapsedTime > secondsBetweenSpawns)
+        {
+            elapsedTime = 0;
+            Instantiate(powerUps[Random.Range(0, powerUps.Length)], enemyStartPos, Quaternion.identity);
+        }
     }
     void Spawn()
     {
         numberOfEnemies = Random.Range(waveNumber * 2, waveNumber * 4);
-        for (int i = 0; i < numberOfEnemies; i++)
-        {
-            enemyStartPos.x = Random.Range(-10, 10);
-            enemyStartPos.y = Random.Range(-5, 5);
-            if ((enemyStartPos - foxMove.startPos).sqrMagnitude > 10)
+        if (numberOfEnemies <= maxEnemies) {
+            for (int i = 0; i < numberOfEnemies; i++)
             {
-                Instantiate(listOfPrefabEnemies[Random.Range(0, listOfPrefabEnemies.Length)], enemyStartPos, Quaternion.identity);
+                enemyStartPos.x = Random.Range(-10, 10);
+                enemyStartPos.y = Random.Range(-5, 5);
+                if ((enemyStartPos - foxMove.startPos).sqrMagnitude > 15)
+                {
+                    Instantiate(listOfPrefabEnemies[Random.Range(0, listOfPrefabEnemies.Length)], enemyStartPos, Quaternion.identity);
+                }
             }
-
+        }
+        else if (numberOfEnemies > maxEnemies)
+        {
+            for (int i = 0; i < maxEnemies; i++)
+            {
+                enemyStartPos.x = Random.Range(-10, 10);
+                enemyStartPos.y = Random.Range(-5, 5);
+                if ((enemyStartPos - foxMove.startPos).sqrMagnitude > 15)
+                {
+                    Instantiate(listOfPrefabEnemies[Random.Range(0, listOfPrefabEnemies.Length)], enemyStartPos, Quaternion.identity);
+                }
+            }
         }
     }
 
@@ -126,16 +177,22 @@ public class Controller : MonoBehaviour
     }
     public IEnumerator RespawnCoroutine()
     {
+        foxStartPos = new Vector2(0, 0);
         enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject[] bullets = GameObject.FindGameObjectsWithTag("EnemyBullet");
         foxMove.gameObject.SetActive(false);
         foreach (GameObject enemy in enemies)
         {
             enemyStartPos.x = Random.Range(-10, 10);
             enemyStartPos.y = Random.Range(-5, 5);
-            if ((enemyStartPos - foxMove.startPos).sqrMagnitude > 10)
+            if ((enemyStartPos - foxStartPos).sqrMagnitude > 15)
             {
                 enemy.transform.position = enemyStartPos;
             }
+        }
+        foreach (GameObject bullet in bullets)
+        {
+            Destroy(bullet.gameObject);
         }
         Time.timeScale = 0.1f;
         yield return new WaitForSeconds(respawnDelay/10);

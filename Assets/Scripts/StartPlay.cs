@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class StartPlay : MonoBehaviour
 {
-    public GameObject resumeButton, areYouSure, newButton;
+    public GameObject resumeButton, areYouSure, newButton, scrollView;
+    private bool textActive;
     private void Start()
     {
         if (PlayerPrefs.HasKey("hasgame"))
@@ -32,6 +33,20 @@ public class StartPlay : MonoBehaviour
     public void AreYouSure()
     {
         NewGame();
+    }
+
+    public void AboutButton()
+    {
+        if (textActive == false)
+        {
+            scrollView.SetActive(true);
+            textActive = true;
+        }
+        else if (textActive == true)
+        {
+            scrollView.SetActive(false);
+            textActive = false;
+        }
     }
 
     public void NewGame()

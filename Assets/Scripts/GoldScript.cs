@@ -4,16 +4,27 @@ using UnityEngine;
 
 public class GoldScript : MonoBehaviour
 {
+    float magnetSpeed = 2f;
+    Rigidbody2D rb;
+    GameObject fox;
+    Vector2 foxDirection;
+    public bool magnetic;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        rb = GetComponent<Rigidbody2D>();
+        fox = GameObject.FindGameObjectWithTag("Player");
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        
+        if (magnetic)
+        {
+            foxDirection = -(transform.position - fox.transform.position).normalized;
+            rb.velocity = new Vector2(foxDirection.x, foxDirection.y) * magnetSpeed;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -25,4 +36,5 @@ public class GoldScript : MonoBehaviour
             SoundManagerScript.PlaySound("GoldSound");
         }
     }
+
 }

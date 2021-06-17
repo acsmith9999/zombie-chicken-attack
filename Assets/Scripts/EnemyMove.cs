@@ -7,9 +7,15 @@ public class EnemyMove : MonoBehaviour
 {
     public double moveSpeed;
     private Transform target;
-    public GameObject stain, gold;
+    public GameObject stain, gold, bullet, egg;
     public int scoreValue = 100;
     public int goldValue, hitPoints;
+
+    public bool shooting;
+    public bool laysEgg, explodeProof;
+
+    public float fireRate;
+    public float nextFire = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -23,6 +29,29 @@ public class EnemyMove : MonoBehaviour
     {
         transform.position = Vector3.MoveTowards(transform.position, target.position, (float)(moveSpeed * Time.deltaTime));
 
+        if (shooting)
+        {
+            fireRate = Random.Range(1f, 4f);
+            if (Time.time > nextFire)
+            {
+                Instantiate(bullet, transform.position, Quaternion.identity);
+                nextFire = Time.time + fireRate;
+            }
+        }
+
+        if (laysEgg)
+        {
+            if (GameObject.FindGameObjectsWithTag("Egg").Length < 3)
+            {
+                fireRate = Random.Range(5f, 8f);
+                if (Time.time > nextFire)
+                {
+                    Instantiate(egg, transform.position, Quaternion.identity);
+                    nextFire = Time.time + fireRate;
+                }
+            }
+
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -33,22 +62,37 @@ public class EnemyMove : MonoBehaviour
             Destroy(other.gameObject);
             if (hitPoints < 1)
             {
-                GameObject.FindObjectOfType<ScoreScript>().scoreValue += scoreValue;
-                GameObject.FindObjectOfType<Controller>().totalKillCount++;
-                PlayerPrefs.SetInt("totalkills", GameObject.FindObjectOfType<Controller>().totalKillCount);
-                GameObject.FindObjectOfType<Controller>().levelKillCount++;
-                PlayerPrefs.SetInt("levelkills", GameObject.FindObjectOfType<Controller>().levelKillCount);
-                Destroy(this.gameObject);
+                ChickenDeath();
                 SoundManagerScript.PlaySound("ChickenDeath");
-                Instantiate(stain, this.transform.position, Quaternion.identity);
 
-                if (Random.Range(0, 100) > 30)
-                {
-                    for (int i = 0; i < goldValue; i++)
-                    {
-                        Instantiate(gold, new Vector2(this.transform.position.x + Random.Range(-2, 2), this.transform.position.y + Random.Range(-2, 2)), Quaternion.identity);
-                    }
-                }
+            }
+        }
+
+        if (other.gameObject.tag == "Egg" && explodeProof == false)
+        {
+            SoundManagerScript.PlaySound("Explosion");
+            ChickenDeath();
+            Destroy(other.gameObject);
+        }
+    }
+
+    public void ChickenDeath()
+    {
+        GameObject.FindObjectOfType<ScoreScript>().scoreValue += scoreValue;
+        GameObject.FindObjectOfType<Controller>().totalKillCount++;
+        PlayerPrefs.SetInt("totalkills", GameObject.FindObjectOfType<Controller>().totalKillCount);
+        GameObject.FindObjectOfType<Controller>().levelKillCount++;
+        PlayerPrefs.SetInt("levelkills", GameObject.FindObjectOfType<Controller>().levelKillCount);
+        Destroy(this.gameObject);
+
+
+        Instantiate(stain, this.transform.position, Quaternion.identity);
+
+        if (Random.Range(0, 100) > 30)
+        {
+            for (int i = 0; i < goldValue; i++)
+            {
+                Instantiate(gold, new Vector2(this.transform.position.x + Random.Range(-2, 2), this.transform.position.y + Random.Range(-2, 2)), Quaternion.identity);
             }
         }
     }

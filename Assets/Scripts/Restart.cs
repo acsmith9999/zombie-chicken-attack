@@ -10,9 +10,9 @@ public class Restart : MonoBehaviour
     {
         SceneManager.LoadScene("Farm");
         Time.timeScale = 1f;
-        if (PlayerPrefs.GetInt("currentlives") == 0)
+        if (PlayerPrefs.GetInt("currentlives") < 1)
         {
-            PlayerPrefs.SetInt("currentlives", 3);
+            PlayerPrefs.SetInt("currentlives", PlayerPrefs.GetInt("maxlives"));
 
             PlayerPrefs.SetInt("gold", PlayerPrefs.GetInt("gold")/2);
         }
