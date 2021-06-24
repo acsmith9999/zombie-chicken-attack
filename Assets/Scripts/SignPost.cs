@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class SignPost : MonoBehaviour
 {
-    public GameObject dialogueBox;
+    public GameObject dialogueBox, switchButton;
     public Text dialogueText;
     public string dialogue, altDialogue;
     
@@ -35,7 +35,8 @@ public class SignPost : MonoBehaviour
             }
 
             else{ dialogueText.text = altDialogue; }
-            
+
+
         }
     }
 
@@ -45,6 +46,7 @@ public class SignPost : MonoBehaviour
         {
             playerInRange = true;
         }
+
     }
 
     private void OnTriggerExit2D(Collider2D other)

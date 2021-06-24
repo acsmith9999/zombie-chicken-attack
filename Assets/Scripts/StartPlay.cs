@@ -52,9 +52,10 @@ public class StartPlay : MonoBehaviour
     public void NewGame()
     {
         SceneManager.LoadScene("Farm");
-        PlayerPrefs.DeleteKey("currentlives");
+        PlayerPrefs.SetInt("currentlives",3);
         PlayerPrefs.SetInt("maxlives", 3);
         PlayerPrefs.SetInt("levelaccess", 1);
+        PlayerPrefs.SetString("player", "fox");
         PlayerPrefs.DeleteKey("hasgame");
         PlayerPrefs.DeleteKey("totalkills");
         PlayerPrefs.DeleteKey("gold");

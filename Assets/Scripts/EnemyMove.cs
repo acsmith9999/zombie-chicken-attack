@@ -5,29 +5,31 @@ using UnityEngine.SceneManagement;
 
 public class EnemyMove : MonoBehaviour
 {
-    public double moveSpeed;
-    private Transform target;
+    public float moveSpeed;
+    Transform target;
     public GameObject stain, gold, bullet, egg;
     public int scoreValue = 100;
     public int goldValue, hitPoints;
+    
 
     public bool shooting;
     public bool laysEgg, explodeProof;
 
-    public float fireRate;
+    public float fireRate, layRate;
     public float nextFire = 0f;
+    public float nextLay = 0f;
 
     // Start is called before the first frame update
     void Start()
     {
         target = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
-
     }
+
 
     // Update is called once per frame
     void Update()
     {
-        transform.position = Vector3.MoveTowards(transform.position, target.position, (float)(moveSpeed * Time.deltaTime));
+        transform.position = Vector2.MoveTowards(transform.position, target.transform.position, (moveSpeed * Time.deltaTime));
 
         if (shooting)
         {
@@ -43,11 +45,11 @@ public class EnemyMove : MonoBehaviour
         {
             if (GameObject.FindGameObjectsWithTag("Egg").Length < 3)
             {
-                fireRate = Random.Range(5f, 8f);
-                if (Time.time > nextFire)
+                layRate = Random.Range(5f, 8f);
+                if (Time.time > nextLay)
                 {
                     Instantiate(egg, transform.position, Quaternion.identity);
-                    nextFire = Time.time + fireRate;
+                    nextLay = Time.time + layRate;
                 }
             }
 

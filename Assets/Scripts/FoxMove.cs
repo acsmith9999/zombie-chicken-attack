@@ -9,9 +9,7 @@ public class FoxMove : MonoBehaviour
 
     private Rigidbody2D rb;
 
-    private bool holdPosition;
     private Vector2 playerPos;
-    private Vector2 fireDir;
 
     public GameObject Fox;
     public GameObject bulletDown;
@@ -36,11 +34,17 @@ public class FoxMove : MonoBehaviour
     public int levelAccess;
 
     public Controller gameLevelManager;
+    public BossLevelController bossLevelManager;
+
+    public bool bossLevel;
+
+    public Animator animator;
 
     // Start is called before the first frame update
     void Start()
     {
         gameLevelManager = FindObjectOfType<Controller>();
+        bossLevelManager = FindObjectOfType<BossLevelController>();
 
         rb = GetComponent<Rigidbody2D>();
         if (PlayerPrefs.HasKey("currentlives"))
@@ -55,7 +59,12 @@ public class FoxMove : MonoBehaviour
     void Update()
     {
         playerPos = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-
+        animator.SetFloat("Speed", moveSpeed);
+        if (invisible == true)
+        {
+            animator.SetBool("Invisible", true);
+        }
+        else { animator.SetBool("Invisible", false); }
     }
 
     private void FixedUpdate()
@@ -88,6 +97,11 @@ public class FoxMove : MonoBehaviour
             {
                 enemy.ChickenDeath();
             }
+            EnemyBullet[] enemyBullets = GameObject.FindObjectsOfType<EnemyBullet>();
+            foreach (EnemyBullet bullet in enemyBullets)
+            {
+                Destroy(bullet.gameObject);
+            }
         }
     }
 
@@ -95,15 +109,29 @@ public class FoxMove : MonoBehaviour
     {
         if (other.gameObject.tag == "Enemy" && invisible == false)
         {
+
+            if (bossLevel)
+            {
+                bossLevelManager.Respawn();
+            }
+            else
+            {
+                gameLevelManager.Respawn();
+            }
             lifeCount -= 1;
             PlayerPrefs.SetInt("currentlives", lifeCount);
-            gameLevelManager.Respawn();
             SoundManagerScript.PlaySound("FoxDeath");
             Instantiate(stain, this.transform.position, Quaternion.identity);
             fireRate = 0.1f;
+            EnemyBullet[] enemyBullets = GameObject.FindObjectsOfType<EnemyBullet>();
+            foreach (EnemyBullet bullet in enemyBullets)
+            {
+                Destroy(bullet.gameObject);
+            }
         }
         if (other.gameObject.tag == "Finish")
         {
+            Destroy(this.gameObject);
             SceneManager.LoadScene("Farm");
             if(PlayerPrefs.GetInt("levelaccess") == gameLevelManager.levelNumber)
             {
@@ -144,10 +172,22 @@ public class FoxMove : MonoBehaviour
         {
             lifeCount -= 1;
             PlayerPrefs.SetInt("currentlives", lifeCount);
-            gameLevelManager.Respawn();
+            if (bossLevel)
+            {
+                bossLevelManager.Respawn();
+            }
+            else
+            {
+                gameLevelManager.Respawn();
+            }
             SoundManagerScript.PlaySound("FoxDeath");
             Instantiate(stain, this.transform.position, Quaternion.identity);
             fireRate = 0.1f;
+            EnemyBullet[] enemyBullets = GameObject.FindObjectsOfType<EnemyBullet>();
+            foreach (EnemyBullet bullet in enemyBullets)
+            {
+                Destroy(bullet.gameObject);
+            }
         }
         if (other.gameObject.tag == "Money")
         {
@@ -163,17 +203,45 @@ public class FoxMove : MonoBehaviour
         {
             lifeCount -= 1;
             PlayerPrefs.SetInt("currentlives", lifeCount);
-            gameLevelManager.Respawn();
+            if (bossLevel)
+            {
+                bossLevelManager.Respawn();
+            }
+            else
+            {
+                gameLevelManager.Respawn();
+            }
             SoundManagerScript.PlaySound("FoxDeath");
             SoundManagerScript.PlaySound("Explosion");
             Instantiate(stain, this.transform.position, Quaternion.identity);
             fireRate = 0.1f;
-            EnemyMove[] enemies = GameObject.FindObjectsOfType<EnemyMove>();
-            foreach (EnemyMove enemy in enemies)
-            {
-                enemy.ChickenDeath();
-            }
             Destroy(this.gameObject);
+            EnemyBullet[] enemyBullets = GameObject.FindObjectsOfType<EnemyBullet>();
+            foreach (EnemyBullet bullet in enemyBullets)
+            {
+                Destroy(bullet.gameObject);
+            }
+        }
+        if (other.gameObject.tag == "Farmer" && invisible == false)
+        {
+            lifeCount -= 1;
+            PlayerPrefs.SetInt("currentlives", lifeCount);
+            if (bossLevel)
+            {
+                bossLevelManager.Respawn();
+            }
+            else
+            {
+                gameLevelManager.Respawn();
+            }
+            SoundManagerScript.PlaySound("FoxDeath");
+            Instantiate(stain, this.transform.position, Quaternion.identity);
+            fireRate = 0.1f;
+            EnemyBullet[] enemyBullets = GameObject.FindObjectsOfType<EnemyBullet>();
+            foreach (EnemyBullet bullet in enemyBullets)
+            {
+                Destroy(bullet.gameObject);
+            }
         }
     }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SoundManagerScript : MonoBehaviour
 {
-    public static AudioClip music, chickenDeathSound, foxDeathSound, goldSound, explosion, invisibility, life, rapidFire, runningShoes, shotgun, moneyMagnet;
+    public static AudioClip music, chickenDeathSound, foxDeathSound, goldSound, explosion, invisibility, life, rapidFire, runningShoes, shotgun, moneyMagnet, ow;
     static AudioSource audioSrc;
     // Start is called before the first frame update
     void Start()
@@ -19,6 +19,8 @@ public class SoundManagerScript : MonoBehaviour
         runningShoes = Resources.Load<AudioClip>("RunningShoes");
         shotgun = Resources.Load<AudioClip>("Shotgun");
         moneyMagnet = Resources.Load<AudioClip>("MoneMagnet");
+        ow = Resources.Load<AudioClip>("Ow");
+
 
         audioSrc = GetComponent<AudioSource>();
     }
@@ -63,6 +65,9 @@ public class SoundManagerScript : MonoBehaviour
                 break;
             case "MoneyMagnet":
                 audioSrc.PlayOneShot(moneyMagnet);
+                break;
+            case "Ow":
+                audioSrc.PlayOneShot(ow);
                 break;
         }
         
