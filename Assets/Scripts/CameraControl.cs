@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
+
+    //Not currently attached to any gameobject, this script is for future use
+
     //public Transform followTransform;
 
     private Vector3 targetPos;

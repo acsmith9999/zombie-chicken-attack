@@ -33,22 +33,22 @@ public class Controller : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        foxSpawnPoint = new Vector2(0, 0);
-
+        //set UI
         buttonStart.SetActive(true);
         startButtonActive = true;
-
+        gameOver.SetActive(false);
+        gameWin.SetActive(false);
         Time.timeScale = 0f;
 
+        //set playerprefs
         hasGame = 1;
         PlayerPrefs.SetInt("hasgame", hasGame);
         totalKillCount = PlayerPrefs.GetInt("totalkills");
-
         levelKillCount = 0;
         PlayerPrefs.SetInt("levelkills", levelKillCount);
 
-        waveNumber = 1;
-
+        //create player
+        foxSpawnPoint = new Vector2(0, 0);
         if (PlayerPrefs.GetString("player") == "fox")
         {
             player = Instantiate(Resources.Load("Fox", typeof(GameObject)), foxSpawnPoint, Quaternion.identity) as GameObject;
@@ -57,33 +57,28 @@ public class Controller : MonoBehaviour
         {
             player = Instantiate(Resources.Load("BootsyCat", typeof(GameObject)), foxSpawnPoint, Quaternion.identity) as GameObject;
         }
-        
         movementScript = FoxMove.FindObjectOfType<FoxMove>();
 
+        //set up level
+        waveNumber = 1;
+        SpawnObstacles();
+        Spawn();
         if (enemies == null)
         {
             enemies = GameObject.FindGameObjectsWithTag("Enemy");
         }
-
-
-        SpawnObstacles();
-        Spawn();
-        gameOver.SetActive(false);
-        gameWin.SetActive(false);
-
         if (PlayerPrefs.GetInt("levelaccess") > levelNumber)
         {
             hasDoor = true;
             Instantiate(WinDoor, new Vector2 (-10, -5), Quaternion.identity);
         }
-
         secondsBetweenSpawns = Random.Range(10, 15);
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        //game over
         if (PlayerPrefs.GetInt("currentlives") < 1)
         {
             GameObject.FindGameObjectWithTag("Player").SetActive(false);
@@ -91,6 +86,7 @@ public class Controller : MonoBehaviour
             buttonRestart.SetActive(true);
             Time.timeScale = 0.1f;
         }
+        //game win
         if (GameObject.FindGameObjectsWithTag("Enemy").Length == 0 && !bossLevel)
         {
             gameWin.SetActive(true);
@@ -101,6 +97,7 @@ public class Controller : MonoBehaviour
                 NextLevelButton();
             }
         }
+        //keyboard control menu
         if (startButtonActive == true)
         {
             if (Input.GetKeyDown(_Key))
@@ -108,7 +105,7 @@ public class Controller : MonoBehaviour
                 StartButton();
             }
         }
-
+        //random powerups
         elapsedTime += Time.deltaTime;
         if (elapsedTime > secondsBetweenSpawns)
         {
@@ -116,7 +113,7 @@ public class Controller : MonoBehaviour
             elapsedTime = 0;
             Instantiate(powerUps[Random.Range(0, powerUps.Length)], spawnPosition, Quaternion.identity);
         }
-
+        //win boss level
         if (GameObject.FindGameObjectsWithTag("Farmer").Length == 0 && bossLevel)
         {
             EnemyMove[] enemies = GameObject.FindObjectsOfType<EnemyMove>();
@@ -124,10 +121,8 @@ public class Controller : MonoBehaviour
             {
                 enemy.ChickenDeath();
             }
-
             buttonNext.SetActive(true);
             buttonRestart.SetActive(true);
-
         }
     }
 
@@ -148,6 +143,7 @@ public class Controller : MonoBehaviour
         buttonRestart.SetActive(false);
         buttonNext.SetActive(false);
 
+        //create exit door if doesn't already exist
         if (PlayerPrefs.GetInt("levelkills") > winCondition && !hasDoor && bossLevel == false)
         {
             spawnPosition = Camera.main.ScreenToWorldPoint(new Vector3(Random.Range(0, Screen.width), Random.Range(0, Screen.height), Camera.main.farClipPlane / 2));
@@ -155,9 +151,7 @@ public class Controller : MonoBehaviour
             hasDoor = true;
         }
 
-
         //spawn random items
-
         if (elapsedTime > secondsBetweenSpawns)
         {
             spawnPosition = Camera.main.ScreenToWorldPoint(new Vector3(Random.Range(0, Screen.width), Random.Range(0, Screen.height), Camera.main.farClipPlane / 2));
@@ -165,6 +159,7 @@ public class Controller : MonoBehaviour
             Instantiate(powerUps[Random.Range(0, powerUps.Length)], spawnPosition, Quaternion.identity);
         }
 
+        //destroy enemy bullets that still exist
         EnemyBullet[] enemyBullets = GameObject.FindObjectsOfType<EnemyBullet>();
         foreach (EnemyBullet bullet in enemyBullets)
         {
@@ -188,9 +183,7 @@ public class Controller : MonoBehaviour
     public void closeTextButton()
     {
         winText.SetActive(false);
-
         buttonRestart.SetActive(true);
-
     }
     void Spawn()
     {
@@ -285,7 +278,6 @@ public class Controller : MonoBehaviour
             }
             if (bossLevel)
             {
-
                 farmer.transform.position = enemySpawnPos;
             }
         }
@@ -298,10 +290,7 @@ public class Controller : MonoBehaviour
         yield return new WaitForSeconds(respawnDelay/10);
         Time.timeScale = 1f;
         movePlayer();
-
-
         movementScript.gameObject.SetActive(true);
-
     }
 
     public void movePlayer()

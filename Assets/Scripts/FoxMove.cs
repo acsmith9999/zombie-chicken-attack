@@ -34,9 +34,6 @@ public class FoxMove : MonoBehaviour
     public int levelAccess;
 
     public Controller gameLevelManager;
-    public BossLevelController bossLevelManager;
-
-    public bool bossLevel;
 
     public Animator animator;
 
@@ -44,7 +41,6 @@ public class FoxMove : MonoBehaviour
     void Start()
     {
         gameLevelManager = FindObjectOfType<Controller>();
-        bossLevelManager = FindObjectOfType<BossLevelController>();
 
         rb = GetComponent<Rigidbody2D>();
         if (PlayerPrefs.HasKey("currentlives"))
@@ -95,7 +91,11 @@ public class FoxMove : MonoBehaviour
             EnemyMove[] enemies = GameObject.FindObjectsOfType<EnemyMove>();
             foreach (EnemyMove enemy in enemies)
             {
-                enemy.ChickenDeath();
+                enemy.hitPoints -= 50;
+                if (enemy.hitPoints < 1)
+                {
+                    enemy.ChickenDeath();
+                }
             }
             EnemyBullet[] enemyBullets = GameObject.FindObjectsOfType<EnemyBullet>();
             foreach (EnemyBullet bullet in enemyBullets)
@@ -109,20 +109,13 @@ public class FoxMove : MonoBehaviour
     {
         if (other.gameObject.tag == "Enemy" && invisible == false)
         {
-
-            if (bossLevel)
-            {
-                bossLevelManager.Respawn();
-            }
-            else
-            {
-                gameLevelManager.Respawn();
-            }
+            gameLevelManager.Respawn();
             lifeCount -= 1;
             PlayerPrefs.SetInt("currentlives", lifeCount);
             SoundManagerScript.PlaySound("FoxDeath");
             Instantiate(stain, this.transform.position, Quaternion.identity);
             fireRate = 0.1f;
+            StopAllCoroutines();
             EnemyBullet[] enemyBullets = GameObject.FindObjectsOfType<EnemyBullet>();
             foreach (EnemyBullet bullet in enemyBullets)
             {
@@ -172,17 +165,11 @@ public class FoxMove : MonoBehaviour
         {
             lifeCount -= 1;
             PlayerPrefs.SetInt("currentlives", lifeCount);
-            if (bossLevel)
-            {
-                bossLevelManager.Respawn();
-            }
-            else
-            {
-                gameLevelManager.Respawn();
-            }
+            gameLevelManager.Respawn();
             SoundManagerScript.PlaySound("FoxDeath");
             Instantiate(stain, this.transform.position, Quaternion.identity);
             fireRate = 0.1f;
+            StopAllCoroutines();
             EnemyBullet[] enemyBullets = GameObject.FindObjectsOfType<EnemyBullet>();
             foreach (EnemyBullet bullet in enemyBullets)
             {
@@ -203,18 +190,12 @@ public class FoxMove : MonoBehaviour
         {
             lifeCount -= 1;
             PlayerPrefs.SetInt("currentlives", lifeCount);
-            if (bossLevel)
-            {
-                bossLevelManager.Respawn();
-            }
-            else
-            {
-                gameLevelManager.Respawn();
-            }
+            gameLevelManager.Respawn();
             SoundManagerScript.PlaySound("FoxDeath");
             SoundManagerScript.PlaySound("Explosion");
             Instantiate(stain, this.transform.position, Quaternion.identity);
             fireRate = 0.1f;
+            StopAllCoroutines();
             Destroy(this.gameObject);
             EnemyBullet[] enemyBullets = GameObject.FindObjectsOfType<EnemyBullet>();
             foreach (EnemyBullet bullet in enemyBullets)
@@ -226,17 +207,11 @@ public class FoxMove : MonoBehaviour
         {
             lifeCount -= 1;
             PlayerPrefs.SetInt("currentlives", lifeCount);
-            if (bossLevel)
-            {
-                bossLevelManager.Respawn();
-            }
-            else
-            {
-                gameLevelManager.Respawn();
-            }
+            gameLevelManager.Respawn();
             SoundManagerScript.PlaySound("FoxDeath");
             Instantiate(stain, this.transform.position, Quaternion.identity);
             fireRate = 0.1f;
+            StopAllCoroutines();
             EnemyBullet[] enemyBullets = GameObject.FindObjectsOfType<EnemyBullet>();
             foreach (EnemyBullet bullet in enemyBullets)
             {
@@ -248,7 +223,7 @@ public class FoxMove : MonoBehaviour
     public IEnumerator RunningShoes()
     {
         moveSpeed += 3;
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(5);
         moveSpeed -= 3;
     }
 
@@ -270,45 +245,6 @@ public class FoxMove : MonoBehaviour
     {
         bulletPos = transform.position;
 
-        //if (Input.GetKey(KeyCode.Space) && holdPosition == false)
-        //{
-        //    holdPosition = true;
-        //    fireDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-        //}
-
-        //if (Input.GetKeyUp(KeyCode.Space))
-        //{
-        //    holdPosition = false;
-        //}
-
-        //if (holdPosition == true)
-        //{
-        //    fireDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-        //    if (fireDir.x < -0.5)
-        //    {
-        //        bulletPos += new Vector2(-1.5f, 0);
-        //        Instantiate(bulletLeft, bulletPos, Quaternion.identity);
-        //    }
-        //    else if (fireDir.x > 0.5)
-        //    {
-        //        bulletPos += new Vector2(1.5f, 0);
-        //        Instantiate(bulletRight, bulletPos, Quaternion.identity);
-        //    }
-        //    else if (fireDir.y < -0.5)
-        //    {
-        //        bulletPos += new Vector2(0, -1.5f);
-        //        Instantiate(bulletDown, bulletPos, Quaternion.identity);
-        //    }
-        //    else if (fireDir.y > 0.5)
-        //    {
-        //        bulletPos += new Vector2(0, 1.5f);
-        //        Instantiate(bulletUp, bulletPos, Quaternion.identity);
-        //    }
-
-        //}
-
-        //else
-        //{
             if (Input.GetAxisRaw("Horizontal") < -0.5f)
             {
                 bulletPos += new Vector2(-1.5f, 0);
@@ -332,8 +268,6 @@ public class FoxMove : MonoBehaviour
                 bulletPos += new Vector2(1.5f, 0);
                 Instantiate(bulletRight, bulletPos, Quaternion.identity);
             }
-
-        //}
 
     }
 

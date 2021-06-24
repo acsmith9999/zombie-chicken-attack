@@ -7,13 +7,12 @@ public class EnemyMove : MonoBehaviour
 {
     public float moveSpeed;
     Transform target;
-    public GameObject stain, gold, bullet, egg;
+    public GameObject stain, gold, egg;
+    public GameObject[] bullets;
     public int scoreValue = 100;
-    public int goldValue, hitPoints;
+    public int goldValue, hitPoints, minFireRate, maxFireRate;
     
-
-    public bool shooting;
-    public bool laysEgg, explodeProof;
+    public bool shooting, laysEgg, explodeProof, isBoss;
 
     public float fireRate, layRate;
     public float nextFire = 0f;
@@ -33,17 +32,17 @@ public class EnemyMove : MonoBehaviour
 
         if (shooting)
         {
-            fireRate = Random.Range(1f, 4f);
+            fireRate = Random.Range(minFireRate, maxFireRate);
             if (Time.time > nextFire)
             {
-                Instantiate(bullet, transform.position, Quaternion.identity);
+                Instantiate(bullets[Random.Range(0,bullets.Length)], transform.position, Quaternion.identity);
                 nextFire = Time.time + fireRate;
             }
         }
 
         if (laysEgg)
         {
-            if (GameObject.FindGameObjectsWithTag("Egg").Length < 3)
+            if (GameObject.FindGameObjectsWithTag("Egg").Length < 4)
             {
                 layRate = Random.Range(5f, 8f);
                 if (Time.time > nextLay)
@@ -52,7 +51,6 @@ public class EnemyMove : MonoBehaviour
                     nextLay = Time.time + layRate;
                 }
             }
-
         }
     }
 
@@ -62,19 +60,32 @@ public class EnemyMove : MonoBehaviour
         {
             hitPoints -= 10;
             Destroy(other.gameObject);
+            if (isBoss)
+            {
+                SoundManagerScript.PlaySound("Ow");
+                GameObject.FindObjectOfType<ScoreScript>().scoreValue += 10;
+            }
             if (hitPoints < 1)
             {
                 ChickenDeath();
+                SpawnGold();
                 SoundManagerScript.PlaySound("ChickenDeath");
-
+                if (isBoss)
+                {
+                    SoundManagerScript.PlaySound("Explosion");
+                }
             }
         }
 
         if (other.gameObject.tag == "Egg" && explodeProof == false)
         {
-            SoundManagerScript.PlaySound("Explosion");
             ChickenDeath();
+            if (!isBoss)
+            {
+                SpawnGold();
+            }
             Destroy(other.gameObject);
+            SoundManagerScript.PlaySound("Explosion");
         }
     }
 
@@ -86,10 +97,10 @@ public class EnemyMove : MonoBehaviour
         GameObject.FindObjectOfType<Controller>().levelKillCount++;
         PlayerPrefs.SetInt("levelkills", GameObject.FindObjectOfType<Controller>().levelKillCount);
         Destroy(this.gameObject);
-
-
         Instantiate(stain, this.transform.position, Quaternion.identity);
-
+    }
+    public void SpawnGold()
+    {
         if (Random.Range(0, 100) > 30)
         {
             for (int i = 0; i < goldValue; i++)

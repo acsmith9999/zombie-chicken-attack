@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GoldScript : MonoBehaviour
 {
-    float magnetSpeed = 2f;
+    float magnetSpeed = 4f;
     Rigidbody2D rb;
     GameObject fox;
     Vector2 foxDirection;
